@@ -12,7 +12,7 @@
 }
 else
 {
-    <MudSelect @bind-Value="_value" Style="margin-bottom: 40px;" TextChanged="Callback">
+    <MudSelect @bind-Value="_value" Style="margin-bottom: 40px;" TextChanged="Callback" Disabled="_isUpdating">
         @foreach (var state in _states)
         {
             <MudSelectItem Value="@state">@state</MudSelectItem>
@@ -46,9 +46,10 @@ else
 }
 
 @code {
-    private List<Map> Maps = new List<Map>();
-    private List<Map> FilteredMaps = new List<Map>();
+    List<Map> Maps = new List<Map>();
+    List<Map> FilteredMaps = new List<Map>();
     string _value;
+    bool _isUpdating = false;
 
     string[] _states =
     {
@@ -68,17 +69,16 @@ else
 
     private async Task Callback(string obj)
     {
+        _isUpdating = true;
+    
         _value = obj;
-        
         FilteredMaps.Clear();
-
+    
         if (_value == "None")
         {
             foreach (var map in Maps)
             {
                 FilteredMaps.Add(map);
-                StateHasChanged();
-                await Task.Delay(30);
             }
         }
         else if (_value == "Name")
@@ -86,11 +86,10 @@ else
             foreach (var map in Maps.OrderBy(map => map.Name).ToList())
             {
                 FilteredMaps.Add(map);
-                StateHasChanged();
-                await Task.Delay(30);
             }
         }
-        StateHasChanged();
+        StateHasChanged();  
+        _isUpdating = false;
     }
 
     class Map
