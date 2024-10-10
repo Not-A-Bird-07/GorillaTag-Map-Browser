@@ -3,16 +3,17 @@
 @using Newtonsoft.Json
 
 <PageTitle>Maps</PageTitle>
+<MudContainer Class="text-center">
+    <MudText Typo="Typo.h3" GutterBottom="true">There is @Maps.Count().ToString() Maps</MudText>
+</MudContainer>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Maps</MudText>
-
-@if (Maps == null)
+@if (Maps == null)  
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
 {
-    <MudSelect @bind-Value="_value" Style="margin-bottom: 40px;" TextChanged="Callback" Disabled="_isUpdating">
+    <MudSelect HelperText="Sort by" Dense="true" @bind-Value="_value" Style="margin-bottom: 40px;" TextChanged="Callback" Disabled="_isUpdating">
         @foreach (var state in _states)
         {
             <MudSelectItem Value="@state">@state</MudSelectItem>
