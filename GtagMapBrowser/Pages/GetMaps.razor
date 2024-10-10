@@ -4,7 +4,7 @@
 
 <PageTitle>Maps</PageTitle>
 <MudContainer Class="text-center">
-    <MudText Typo="Typo.h3" GutterBottom="true">There is @Maps.Count().ToString() Maps</MudText>
+    <MudText Typo="Typo.h3" GutterBottom="true">There are @Maps.Count().ToString() maps.</MudText>
 </MudContainer>
 
 @if (Maps == null)  
@@ -13,21 +13,38 @@
 }
 else
 {
-    <MudSelect HelperText="Sort by" Dense="true" @bind-Value="_value" Style="margin-bottom: 40px;" TextChanged="Callback" Disabled="_isUpdating">
-        @foreach (var state in _states)
-        {
-            <MudSelectItem Value="@state">@state</MudSelectItem>
-        }
-    </MudSelect>
+    <MudContainer Class="Options" Style="margin-bottom: 40px; padding: 5px; display: flex; justify-content: center;">
+        <span style="align-self: center; margin-right: 10px;">Sort by:</span>
+        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
+            <MudButton>@_sort</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+                @foreach (var state in _states)
+                {
+                    <MudMenuItem OnClick="() => Sort(state)">@state</MudMenuItem>
+                }
+            </MudMenu>
+        </MudButtonGroup>
 
-    <MudGrid Justify=Justify.Center>
+        <span style="align-self: center; margin-left: 20px; margin-right: 10px;">Size:</span>
+        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
+            <MudButton>@_sizestring</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+                @foreach (var size in _sizes)
+                {
+                    <MudMenuItem OnClick="() => Size(size.Value)">@size.Key</MudMenuItem>
+                }
+            </MudMenu>
+        </MudButtonGroup>
+    </MudContainer>
+
+    <MudGrid Justify=Justify.Center Class="Grid">
         @foreach (var item in FilteredMaps)
         {
             try
             {
-                <div style="padding: 4px;">
+                <div style="padding: 2px;">
                     <MudButton Variant="Variant.Text" Href=@item.Url Target="_blank">
-                        <MudCard class="hover-card" Style="width: 300px; position: relative; border-radius: 15px; overflow: hidden;">
+                        <MudCard class="hover-card" Style=@_cardStyle>
                             <MudCardMedia Image="@item.Image" Alt="@item.Name" class="hover-image"></MudCardMedia>
                             <div style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.2);">
                                 <MudText Typo="Typo.subtitle1" Align="Align.Left" Style="padding: 2px; color: white;">
@@ -43,7 +60,7 @@ else
                         transition: transform 0.3s ease;
                     }
                     .hover-card:hover {
-                        transform: scale(1.02);
+                        transform: scale(1.04);
                     }
                     .hover-image {
                         transition: opacity 0.3s ease;
@@ -64,8 +81,17 @@ else
 @code {
     List<Map> Maps = new List<Map>();
     List<Map> FilteredMaps = new List<Map>();
-    string _value;
     bool _isUpdating = false;
+    string _sort;
+    string _cardStyle;
+    string _sizestring;
+
+    Dictionary<string,int> _sizes = new ()
+    {
+        {"Small", 200},
+        {"Medium", 250},
+        {"Large", 300}
+    };
 
     string[] _states =
     {
@@ -79,25 +105,32 @@ else
         string json = await Http.GetStringAsync(url);
 
         Maps = JsonConvert.DeserializeObject<List<Map>>(json);
-        
-        _value = "None";
+        await Size(_sizes["Medium"]);
+        await Sort("None");
     }
 
-    private async Task Callback(string obj)
+    private async Task Size(int size)
+    {
+        _cardStyle = $"width: {size}px; height: {size}px; position: relative; border-radius: 15px; overflow: hidden;";
+        _sizestring = _sizes.FirstOrDefault(x => x.Value == size).Key;
+        StateHasChanged(); 
+    }
+
+    private async Task Sort(string obj)
     {
         _isUpdating = true;
     
-        _value = obj;
+        _sort = obj;
         FilteredMaps.Clear();
     
-        if (_value == "None")
+        if (_sort == "None")
         {
             foreach (var map in Maps)
             {
                 FilteredMaps.Add(map);
             }
         }
-        else if (_value == "Name")
+        else if (_sort == "Name")
         {
             foreach (var map in Maps.OrderBy(map => map.Name).ToList())
             {

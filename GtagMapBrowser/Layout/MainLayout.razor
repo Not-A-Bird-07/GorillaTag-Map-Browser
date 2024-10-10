@@ -5,7 +5,7 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
-    <MudDrawerHeader Dense="true" Style="padding-left: 5px;">
+    <MudDrawerHeader Dense="true" Style="padding-left: 5px; width: 75px">
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
     </MudDrawerHeader>
     
@@ -13,7 +13,7 @@
         <NavMenu/>
     </MudDrawer>
     
-    <MudMainContent Class="mt-16 pa-4">
+    <MudMainContent Class="MMC pa-4">
         @Body
     </MudMainContent>
 </MudLayout>
