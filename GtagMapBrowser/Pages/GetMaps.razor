@@ -37,6 +37,21 @@ else
                         </MudCard>
                     </MudButton>
                 </div>
+
+                <style>
+                    .hover-card {
+                        transition: transform 0.3s ease;
+                    }
+                    .hover-card:hover {
+                        transform: scale(1.02);
+                    }
+                    .hover-image {
+                        transition: opacity 0.3s ease;
+                    }
+                    .hover-card:hover .hover-image {
+                        opacity: 0.7;
+                    }
+                </style>
             }
             catch (Exception e)
             {
