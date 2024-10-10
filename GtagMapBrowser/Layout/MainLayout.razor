@@ -5,10 +5,9 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
-    <MudAppBar Elevation="0" Dense="true" Class="app-bar">
-        <MudSpacer />
+    <MudDrawerHeader Dense="true" Style="padding-left: 5px;">
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
-    </MudAppBar>    
+    </MudDrawerHeader>
     
     <MudDrawer @bind-Open="_drawerOpen" Breakpoint="Breakpoint.Md" MiniWidth="50px" ClipMode="DrawerClipMode.Always" Elevation="1" Variant="DrawerVariant.Mini" OpenMiniOnHover="true" Class="drawer">
         <NavMenu/>
