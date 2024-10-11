@@ -4,10 +4,10 @@
 
 <PageTitle>Maps</PageTitle>
 <MudContainer Class="text-center">
-    <MudText Typo="Typo.h3" GutterBottom="true">There are @Maps.Count().ToString() maps.</MudText>
+    <MudText Typo="Typo.h3" GutterBottom="true">There are @_maps.Count().ToString() maps.</MudText>
 </MudContainer>
 
-@if (Maps == null)  
+@if (_maps == null)  
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
@@ -38,13 +38,13 @@ else
     </MudContainer>
 
     <MudGrid Justify=Justify.Center Class="Grid">
-        @foreach (var item in FilteredMaps)
+        @foreach (var item in _filteredMaps)
         {
             try
             {
                 <div style="padding: 2px;">
-                    <MudButton Variant="Variant.Text" Href=@item.Url Target="_blank">
-                        <MudCard class="hover-card" Style=@_cardStyle>
+                    <MudButton Variant="Variant.Text" Href="@item.Url" Target="_blank">
+                        <MudCard class="hover-card" Style="@_cardStyle">
                             <MudCardMedia Image="@item.Image" Alt="@item.Name" class="hover-image"></MudCardMedia>
                             <div style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.2);">
                                 <MudText Typo="Typo.subtitle1" Align="Align.Left" Style="padding: 2px; color: white;">
@@ -79,9 +79,8 @@ else
 }
 
 @code {
-    List<Map> Maps = new List<Map>();
-    List<Map> FilteredMaps = new List<Map>();
-    bool _isUpdating = false;
+    List<Map> _maps = new List<Map>();
+    List<Map> _filteredMaps = new List<Map>();
     string _sort;
     string _cardStyle;
     string _sizestring;
@@ -104,7 +103,7 @@ else
         string url = "https://raw.githubusercontent.com/Not-A-Bird-07/Maps/refs/heads/main/Maps.json";
         string json = await Http.GetStringAsync(url);
 
-        Maps = JsonConvert.DeserializeObject<List<Map>>(json);
+        _maps = JsonConvert.DeserializeObject<List<Map>>(json);
         await Size(_sizes["Medium"]);
         await Sort("None");
     }
@@ -118,27 +117,25 @@ else
 
     private async Task Sort(string obj)
     {
-        _isUpdating = true;
-    
         _sort = obj;
-        FilteredMaps.Clear();
-    
+        _filteredMaps.Clear();
+
         if (_sort == "None")
         {
-            foreach (var map in Maps)
+            foreach (var map in _maps)
             {
-                FilteredMaps.Add(map);
+                _filteredMaps.Add(map);
             }
         }
         else if (_sort == "Name")
         {
-            foreach (var map in Maps.OrderBy(map => map.Name).ToList())
+            foreach (var map in _maps.OrderBy(map => map.Name).ToList())
             {
-                FilteredMaps.Add(map);
+                _filteredMaps.Add(map);
             }
         }
-        StateHasChanged();  
-        _isUpdating = false;
+
+        StateHasChanged();
     }
 
     class Map
