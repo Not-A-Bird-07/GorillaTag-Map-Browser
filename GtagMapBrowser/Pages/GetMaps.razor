@@ -95,6 +95,7 @@ else
     string[] _states =
     {
         "None",
+        "Curated",
         "Name"
     };
 
@@ -134,6 +135,16 @@ else
                 _filteredMaps.Add(map);
             }
         }
+        else if (_sort == "Curated")
+        {
+            foreach (var map in _maps)
+            {
+                if (map.Good == true)
+                {
+                    _filteredMaps.Add(map);
+                }
+            }
+        }
 
         StateHasChanged();
     }
@@ -143,5 +154,6 @@ else
         public string Name { get; set; }
         public string Image { get; set; }
         public string Url { get; set; }
+        public bool Good { get; set; }
     }
 }
