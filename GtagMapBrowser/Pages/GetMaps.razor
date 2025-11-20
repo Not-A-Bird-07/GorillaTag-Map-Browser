@@ -17,10 +17,10 @@ else
         <span style="align-self: center; margin-right: 10px;">Sort by:</span>
         <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
             <MudButton>@_sort.ToString()</MudButton>
-            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
-                @foreach (var state in _states)
+            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;"><!-- sorting options -->
+                @foreach (SortOption state in Enum.GetValues(typeof(SortOption)).Cast<SortOption>())
                 {
-                    <MudMenuItem OnClick="() => Sort(Enum.Parse<SortOption>(state))">@state</MudMenuItem>
+                    <MudMenuItem OnClick="() => Sort(state)">@state</MudMenuItem>
                 }
             </MudMenu>
         </MudButtonGroup>
@@ -28,7 +28,7 @@ else
         <span style="align-self: center; margin-left: 20px; margin-right: 10px;">Icon Size:</span>
         <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
             <MudButton>@_sizeString</MudButton>
-            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;"><!-- size options -->
                 @foreach (KeyValuePair<string, int> size in _sizes)
                 {
                     <MudMenuItem OnClick="() => Size(size.Value)">@size.Key</MudMenuItem>
@@ -39,7 +39,7 @@ else
     
     <MudContainer Class="Search" Style="margin-bottom: 40px; padding: 5px; display: flex; justify-content: center;">
         
-        <MudButton OnClick="Random" EndIcon="@Icons.Material.Filled.QuestionMark" Color="Color.Primary" Style="transform: translate(0, 8px);"></MudButton>
+        <MudButton OnClick="Random" EndIcon="" Color="Color.Primary" Style="transform: translate(0, 8px);"></MudButton>
         
         <MudText Typo="Typo.body1">
             <MudTextField @bind-Value="_textValue" Label="Search" Variant="Variant.Text"></MudTextField>
@@ -48,8 +48,8 @@ else
         <MudButton OnClick="Search" StartIcon="@Icons.Material.Filled.Search" Color="Color.Primary" Style="transform: translate(0, 8px);">Search</MudButton>
     </MudContainer>
 
-    <MudGrid Justify=Justify.Center Class="Grid">
-        @foreach (var item in _filteredMaps)
+    <MudGrid Justify=Justify.Center Class="Grid"><!-- main grid view -->
+        @foreach (MapInfo item in _filteredMaps)
         {
             try
             {
@@ -98,22 +98,13 @@ else
     readonly Random _random = new ();
     const string mapsUrl = "https://raw.githubusercontent.com/Not-A-Bird-07/Maps/refs/heads/main/Maps.json";
 
-    readonly Dictionary<string,int> _sizes = new ()
-    {
+    readonly Dictionary<string,int> _sizes = new () {
         {"Small", 200},
         {"Medium", 250},
         {"Large", 300}
     };
 
-    readonly string[] _states =
-    [
-        "A_Z",
-        "Z_A",
-        "Curated"
-    ];
-
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         string json = await Http.GetStringAsync(mapsUrl);
 
         _maps = JsonConvert.DeserializeObject<List<MapInfo>>(json);
@@ -121,16 +112,14 @@ else
         await Sort(SortOption.A_Z);
     }
 
-    private Task Size(int size)
-    {
+    private Task Size(int size) {
         _cardStyle = $"width: {size}px; height: {size}px; position: relative; border-radius: 15px; overflow: hidden;";
         _sizeString = _sizes.FirstOrDefault(x => x.Value == size).Key;
         StateHasChanged();
         return Task.CompletedTask;
     }
 
-    private Task Search()
-    { 
+    private Task Search() { 
         _filteredMaps = _maps
             .Where(m => m.Name.Contains(_textValue, StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -139,8 +128,7 @@ else
         return Task.CompletedTask;
     }
 
-    private Task Random()
-    {
+    private Task Random() {
         string randomMapName = _maps[_random.Next(0, _maps.Count)].Name;
         _filteredMaps = _maps
             .Where(m => m.Name == randomMapName)
@@ -149,12 +137,10 @@ else
         return Task.CompletedTask;
     }
 
-    private Task Sort(SortOption sortOption)
-    {
+    private Task Sort(SortOption sortOption) {
         _sort = sortOption;
         _filteredMaps.Clear();
-        switch (sortOption)
-        {
+        switch (sortOption) {
             case SortOption.A_Z:
                 foreach (MapInfo map in _maps.OrderBy(map => map.Name).ToList())
                     _filteredMaps.Add(map);
@@ -170,18 +156,24 @@ else
                     if (map.Good)
                         _filteredMaps.Add(map);
                 break;
-                
-            default://doing this so rider stops yelling at me
+            
+            case SortOption.Lua:
+                foreach (MapInfo map in _maps) {
+                    if(map.HasLua)
+                        _filteredMaps.Add(map);
+                }
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(sortOption), sortOption, null);
         }
         StateHasChanged();
         return Task.CompletedTask;
     }
     
-    public enum SortOption
-    {
+    public enum SortOption {
         A_Z,
         Z_A,
-        Curated
+        Curated,
+        Lua
     }
 }
