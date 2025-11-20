@@ -1,6 +1,7 @@
 ﻿@page "/getmaps"
+@using System.Text.Json
+@using System.Text.Json.Serialization
 @inject HttpClient Http
-@using Newtonsoft.Json
 
 <PageTitle>Maps</PageTitle>
 <MudContainer Class="text-center">
@@ -73,11 +74,11 @@ else
                     .hover-card:hover {
                         transform: scale(1.04);
                     }
+                    .hover-card.hover-image:hover {
+                        opacity: 0.7;
+                    }
                     .hover-image {
                         transition: opacity 0.3s ease;
-                    }
-                    .hover-card:hover .hover-image {
-                        opacity: 0.7;
                     }
                 </style>
             } catch (Exception e)
@@ -88,7 +89,7 @@ else
     </MudGrid>
 }
 
-@code {
+@code {//ngl this code kinda not good :(
     List<MapInfo> _maps = [];
     List<MapInfo> _filteredMaps = [];
     string _textValue = string.Empty;
@@ -107,7 +108,7 @@ else
     protected override async Task OnInitializedAsync() {
         string json = await Http.GetStringAsync(mapsUrl);
 
-        _maps = JsonConvert.DeserializeObject<List<MapInfo>>(json);
+        _maps  = JsonSerializer.Deserialize<List<MapInfo>>(json);
         await Size(_sizes["Medium"]);
         await Sort(SortOption.A_Z);
     }

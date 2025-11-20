@@ -1,6 +1,9 @@
+using System;
+using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using GtagMapBrowser;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
