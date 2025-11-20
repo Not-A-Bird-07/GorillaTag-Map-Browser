@@ -96,7 +96,7 @@ else
     string _cardStyle;
     string _sizeString;
     readonly Random _random = new ();
-    const string mapsUrl = "https://raw.githubusercontent.com/Not-A-Bird-07/Maps/refs/heads/main/Maps.json";
+    const string mapsUrl = "https://map-browser-backend.notabird07.workers.dev/api/mapinfo";
 
     readonly Dictionary<string,int> _sizes = new () {
         {"Small", 200},
@@ -153,7 +153,7 @@ else
                 
             case SortOption.Curated:
                 foreach (MapInfo map in _maps)
-                    if (map.Good)
+                    if (map.Verified)
                         _filteredMaps.Add(map);
                 break;
             
