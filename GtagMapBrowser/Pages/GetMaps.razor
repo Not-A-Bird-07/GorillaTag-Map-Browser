@@ -1,6 +1,5 @@
 ﻿@page "/getmaps"
 @using System.Text.Json
-@using System.Text.Json.Serialization
 @inject HttpClient Http
 
 <PageTitle>Maps</PageTitle>
@@ -152,7 +151,7 @@ else
                     _filteredMaps.Add(map);
                 break;
                 
-            case SortOption.Curated:
+            case SortOption.Verified:
                 foreach (MapInfo map in _maps)
                     if (bool.Parse(map.Verified))
                         _filteredMaps.Add(map);
@@ -174,7 +173,7 @@ else
     public enum SortOption {
         A_Z,
         Z_A,
-        Curated,
+        Verified,
         Lua
     }
 }
